@@ -12,34 +12,35 @@
 
 @class ZNModelXmlParser;
 
+
 @interface ZNXmlHttpRequest : ZNHttpRequest {
-	NSMutableArray* response;
-	ZNModelXmlParser* responseParser;
+  NSMutableArray* response;
+  ZNModelXmlParser* responseParser;
 }
 
 // Convenience method for issuing a request.
 +(void)callService:(NSString*)service
-              method:(NSString*)method
-                data:(NSDictionary*)data
-         fieldCasing:(enum ZNFormatterCasing)fieldCasing
-      responseModels:(NSDictionary*)responseModels
-      responseCasing:(enum ZNFormatterCasing)responseCasing
-              target:(NSObject*)target
-              action:(SEL)action;
+            method:(NSString*)method
+              data:(NSDictionary*)data
+       fieldCasing:(enum ZNFormatterCasing)fieldCasing
+    responseModels:(NSDictionary*)responseModels
+    responseCasing:(enum ZNFormatterCasing)responseCasing
+            target:(NSObject*)target
+            action:(SEL)action;
 
 // Convenience method for issuing a request with a snake-cased server.
 +(void)callService:(NSString*)service
-              method:(NSString*)method
-                data:(NSDictionary*)data
-      responseModels:(NSDictionary*)responseModels
-              target:(NSObject*)target
-              action:(SEL)action;
+            method:(NSString*)method
+              data:(NSDictionary*)data
+    responseModels:(NSDictionary*)responseModels
+            target:(NSObject*)target
+            action:(SEL)action;
 
 // Designated initializer.
 -(id)initWithURLRequest:(NSURLRequest*)request
-           responseModels:(NSDictionary*)responseModels
-           responseCasing:(enum ZNFormatterCasing)responseCasing
-                   target:(NSObject*)target
-                   action:(SEL)action;
+         responseModels:(NSDictionary*)responseModels
+         responseCasing:(enum ZNFormatterCasing)responseCasing
+                 target:(NSObject*)target
+                 action:(SEL)action;
 
 @end

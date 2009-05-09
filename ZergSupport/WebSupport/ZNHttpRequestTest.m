@@ -15,10 +15,10 @@
 // Model that tests serialization.
 @interface ZNHttpRequestTestModel : ZNModel
 {
-	NSString* textVal;
-	NSUInteger uintVal;
-	BOOL trueVal;
-	NSDate* nilVal;
+  NSString* textVal;
+  NSUInteger uintVal;
+  BOOL trueVal;
+  NSDate* nilVal;
 }
 
 @property (nonatomic, retain) NSString* textVal;
@@ -33,17 +33,18 @@
 @synthesize textVal, uintVal, trueVal, nilVal;
 
 -(void)dealloc {
-	[textVal release];
-	[nilVal release];
-	[super dealloc];
+  [textVal release];
+  [nilVal release];
+  [super dealloc];
 }
 
 @end
 
 
 @interface ZNHttpRequestTest : SenTestCase {
-	NSString* service;
-	BOOL receivedResponse;
+  ZNHttpRequestTestModel* requestModel;
+  NSString* service;
+  BOOL receivedResponse;
 }
 
 @end
@@ -56,76 +57,135 @@
 }
 
 -(void)setUp {
-	service = @"http://zn-testbed.herokugarden.com/web_support/echo.xml";
-	receivedResponse = NO;
+  service = @"http://zn-testbed.heroku.com/web_support/echo.xml";
+  receivedResponse = NO;
   [self warmUpHerokuService:service];
-	[ZNHttpRequest deleteCookiesForService:service];
+  [ZNHttpRequest deleteCookiesForService:service];
+
+  requestModel = [[[ZNHttpRequestTestModel alloc] init] autorelease];
+  requestModel.textVal = @"Something\0special";
+  requestModel.uintVal = 3141592;
+  requestModel.trueVal = YES;
+  requestModel.nilVal = nil;
 }
 
 -(void)tearDown {
-	[service release];
-	service = nil;
+  [service release];
+  service = nil;
 }
 
 -(void)dealloc {
-	[super dealloc];
+  [super dealloc];
 }
 
--(void)testOnlineRequest {
-	ZNHttpRequestTestModel* requestModel = [[[ZNHttpRequestTestModel alloc] init]
-                                          autorelease];
-	requestModel.textVal = @"Something\0special";
-	requestModel.uintVal = 3141592;
-	requestModel.trueVal = YES;
-	requestModel.nilVal = nil;
-	
-	NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+-(void)testOnlinePut {
+  NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
                         requestModel, @"model",
                         @"someString", @"stringKey", nil];
-	[ZNHttpRequest callService:service
+  [ZNHttpRequest callService:service
                       method:kZNHttpMethodPut
                         data:dict
                  fieldCasing:kZNFormatterSnakeCase
                       target:self
                       action:@selector(checkOnlineAndFileResponse:)];
-	
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
+
+  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
                                             1.0]];
-	
-	STAssertEquals(YES, receivedResponse, @"Response never received");
+
+  STAssertEquals(YES, receivedResponse, @"Response never received");
 }
 
 -(void)checkOnlineAndFileResponse:(NSData*)response {
-	receivedResponse = YES;
-	STAssertFalse([response isKindOfClass:[NSError class]],
+  receivedResponse = YES;
+  STAssertFalse([response isKindOfClass:[NSError class]],
                 @"Error occured %@", response);
-	
-	NSString* responseString =
-  [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];	
-	NSString* bodyPath = [[[NSBundle mainBundle] resourcePath]
+
+  NSString* responseString =
+  [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
+  NSString* bodyPath = [[[NSBundle mainBundle] resourcePath]
                         stringByAppendingPathComponent:
                         @"ZNHttpRequestTest.put"];
-	STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath],
+  STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath],
                        responseString, @"Wrong request");
 }
 
 -(void)testFileRequest {
-	NSString* filePath = [[[NSBundle mainBundle] resourcePath]
+  NSString* filePath = [[[NSBundle mainBundle] resourcePath]
                         stringByAppendingPathComponent:
                         @"ZNHttpRequestTest.put"];
-	NSString* fileUrl = [[NSURL fileURLWithPath:filePath] absoluteString];
-	
-	[ZNHttpRequest callService:fileUrl
+  NSString* fileUrl = [[NSURL fileURLWithPath:filePath] absoluteString];
+
+  [ZNHttpRequest callService:fileUrl
                       method:kZNHttpMethodGet
                         data:nil
-                 fieldCasing:kZNFormatterSnakeCase   
+                 fieldCasing:kZNFormatterSnakeCase
                       target:self
                       action:@selector(checkOnlineAndFileResponse:)];
-	
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
+
+  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
                                             1.0]];
-	
-	STAssertEquals(YES, receivedResponse, @"Response never received");
+
+  STAssertEquals(YES, receivedResponse, @"Response never received");
+}
+
+-(void)testOnlineGetWithoutQuery {
+  NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                        requestModel, @"model",
+                        @"someString", @"stringKey", nil];
+  [ZNHttpRequest callService:service
+                      method:kZNHttpMethodGet
+                        data:dict
+                 fieldCasing:kZNFormatterSnakeCase
+                      target:self
+                      action:@selector(checkOnlineGetWithoutQuery:)];
+
+  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
+                                            1.0]];
+
+  STAssertEquals(YES, receivedResponse, @"Response never received");
+}
+-(void)checkOnlineGetWithoutQuery:(NSData*)response {
+  receivedResponse = YES;
+  STAssertFalse([response isKindOfClass:[NSError class]],
+                @"Error occured %@", response);
+
+  NSString* responseString =
+      [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
+  NSString* bodyPath = [[[NSBundle mainBundle] resourcePath]
+                        stringByAppendingPathComponent:
+                        @"ZNHttpRequestTest.get1"];
+  STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath],
+                       responseString, @"Wrong request");
+}
+
+-(void)testOnlineGetWithQuery {
+  NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                        requestModel, @"model",
+                        @"someString", @"stringKey", nil];
+  [ZNHttpRequest callService:[NSString stringWithFormat:@"%@?xarg=yes", service]
+                      method:kZNHttpMethodGet
+                        data:dict
+                 fieldCasing:kZNFormatterSnakeCase
+                      target:self
+                      action:@selector(checkOnlineGetWithQuery:)];
+
+  [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
+                                           1.0]];
+
+  STAssertEquals(YES, receivedResponse, @"Response never received");
+}
+-(void)checkOnlineGetWithQuery:(NSData*)response {
+  receivedResponse = YES;
+  STAssertFalse([response isKindOfClass:[NSError class]],
+                @"Error occured %@", response);
+
+  NSString* responseString =
+  [[NSString alloc] initWithData:response encoding:NSUTF8StringEncoding];
+  NSString* bodyPath = [[[NSBundle mainBundle] resourcePath]
+                        stringByAppendingPathComponent:
+                        @"ZNHttpRequestTest.get2"];
+  STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath],
+                       responseString, @"Wrong request");
 }
 
 @end

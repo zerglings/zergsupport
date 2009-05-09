@@ -38,14 +38,15 @@
 @end
 
 
-@interface SenTestCaseFixturesTest : SenTestCase
+@interface ZNSenTestCaseFixturesTest : SenTestCase
 @end
 
 
-@implementation SenTestCaseFixturesTest
+@implementation ZNSenTestCaseFixturesTest
 -(void)testLoadFixtures {
-  NSArray* loadedFixtures = [self fixturesFrom:@"SenTestCase+FixturesTest.xml"];
-  
+  NSArray* loadedFixtures = [self
+                             fixturesFrom:@"ZNSenTestCase+FixturesTest.xml"];
+
   STAssertEquals(3U, [loadedFixtures count],
                  @"Incorrect number of fixtures loaded");
 
@@ -56,7 +57,7 @@
                        @"Wrong value for first fixture's string property");
   STAssertEqualsWithAccuracy(3.141592, fixture1.cash, 0.0000001,
                              @"Wrong value for first fixture's float property");
-  
+
   ZNFixtureTestModel2* fixture2 = [loadedFixtures objectAtIndex:1];
   STAssertTrue([fixture2 isKindOfClass:[ZNFixtureTestModel2 class]],
                @"Wrong model class instantiated for second fixture");
@@ -65,7 +66,7 @@
 
   ZNFixtureTestModel1* fixture3 = [loadedFixtures objectAtIndex:2];
   STAssertTrue([fixture3 isKindOfClass:[ZNFixtureTestModel1 class]],
-               @"Wrong model class instantiated for third fixture");  
+               @"Wrong model class instantiated for third fixture");
   STAssertEqualStrings(@"Third Name", fixture3.name,
                        @"Wrong value for third fixture's string property");
   STAssertEqualsWithAccuracy(1.0, fixture3.cash, 0.0000001,

@@ -11,7 +11,7 @@
 #import "FormatSupport.h"
 #import "ModelSupport.h"
 
-@interface ZNXmlHttpRequest () <ZNModelXmlParserDelegate> 
+@interface ZNXmlHttpRequest () <ZNModelXmlParserDelegate>
 @end
 
 @implementation ZNXmlHttpRequest
@@ -20,48 +20,48 @@
 
 -(id)initWithURLRequest:(NSURLRequest*)theRequest
          responseModels:(NSDictionary*)theResponseModels
-         responseCasing:(ZNFormatterCasing)responseCasing
+         responseCasing:(enum ZNFormatterCasing)responseCasing
                  target:(NSObject*)theTarget
                  action:(SEL)theAction {
-	if ((self = [super initWithURLRequest:theRequest
+  if ((self = [super initWithURLRequest:theRequest
                                  target:theTarget
                                  action:theAction])) {
-		response = [[NSMutableArray alloc] init];
-		responseParser = [[ZNModelXmlParser alloc]
+    response = [[NSMutableArray alloc] init];
+    responseParser = [[ZNModelXmlParser alloc]
                       initWithSchema:theResponseModels
                       documentCasing:responseCasing];
-		responseParser.delegate = self;
-	}
-	return self;
+    responseParser.delegate = self;
+  }
+  return self;
 }
 
 -(void)dealloc {
-	[response release];
-	[responseParser release];
-	[super dealloc];
+  [response release];
+  [responseParser release];
+  [super dealloc];
 }
 
 +(void)callService:(NSString*)service
             method:(NSString*)method
               data:(NSDictionary*)data
-       fieldCasing:(ZNFormatterCasing)fieldCasing
+       fieldCasing:(enum ZNFormatterCasing)fieldCasing
     responseModels:(NSDictionary*)responseModels
-    responseCasing:(ZNFormatterCasing)responseCasing
+    responseCasing:(enum ZNFormatterCasing)responseCasing
             target:(NSObject*)target
             action:(SEL)action {
-	NSURLRequest* urlRequest = [self newURLRequestToService:service
+  NSURLRequest* urlRequest = [self newURLRequestToService:service
                                                    method:method
                                                      data:data
                                               fieldCasing:fieldCasing];
-	ZNXmlHttpRequest* request =
-  [[ZNXmlHttpRequest alloc] initWithURLRequest:urlRequest
-                                responseModels:responseModels
-                                responseCasing:responseCasing
-                                        target:target
-                                        action:action];
-	[request start];
-	[urlRequest release];
-	[request release];
+  ZNXmlHttpRequest* request =
+      [[ZNXmlHttpRequest alloc] initWithURLRequest:urlRequest
+                                    responseModels:responseModels
+                                    responseCasing:responseCasing
+                                            target:target
+                                            action:action];
+  [request start];
+  [urlRequest release];
+  [request release];
 }
 
 +(void)callService:(NSString*)service
@@ -85,7 +85,7 @@
 -(void)parsedItem:(NSDictionary*)itemData
              name:(NSString*)itemName
           context:(id)context {
-  [response addObject:itemData];  
+  [response addObject:itemData];
 }
 -(void)parsedModel:(ZNModel*)model
            context:(id)context {
@@ -95,10 +95,10 @@
 #pragma mark Delegate Invocation
 
 -(void)reportData {
-	NSAutoreleasePool* arp = [[NSAutoreleasePool alloc] init];
-	[responseParser parseData:responseData];
-	[arp release];
-	[target performSelector:action withObject:response];	
+  NSAutoreleasePool* arp = [[NSAutoreleasePool alloc] init];
+  [responseParser parseData:responseData];
+  [arp release];
+  [target performSelector:action withObject:response];
 }
 
 @end

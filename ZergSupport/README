@@ -29,7 +29,7 @@ one application containing that code is approved for submission to the Apple
 Store. The philosophy behind this decision is that ZergSupport is intended to
 remove development headaches, not contribute to them.
 
-ZergSupport is currently compatible with iPhone SDK 2.0. 
+ZergSupport is currently compatible with iPhone SDK 2.0 and above. 
 
 
 TARGETS
@@ -85,6 +85,23 @@ subset of the Google Toolbox for Mac. On top of that, it supports Rails-like
 fixtures for ModelSupport models. TestSupport is only included in the testing
 targets, so you don't have to worry about the APL license that comes with
 Google's code.
+
+
+DOCUMENTATION
+
+The best documentation for the code are the test cases. The top-level header
+files (*Support.h) have overviews for the parts of the toolkit that they cover.
+Specifications are more spotty among internal classes, and classes whose
+interfaces don't feel ready.
+
+The following blog posts highlight the most convincing features, and provide
+code samples.
+
+The main use case for the toolkit, with code samples:
+http://blog.costan.us/2009/04/toolkit-for-iphone-web-service.html
+
+Using JSON for a better life:
+http://blog.costan.us/2009/05/iphone-web-service-toolkit-upgrade-json.html
 
 
 CONTRIBUTING

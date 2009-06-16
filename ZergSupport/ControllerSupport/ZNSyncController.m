@@ -75,7 +75,7 @@
     [self handleSystemError:error];
     return YES;
   }
-  if ([(NSArray*)results count] == 1) {
+  if ([(NSArray*)results count] == 1 && errorModelClass) {
     // check for service error
     ZNModel* maybeError = [(NSArray*)results objectAtIndex:0];
     if ([maybeError isKindOfClass:errorModelClass])
@@ -108,7 +108,7 @@
 #pragma mark Subclass Methods.
 
 -(void)sync {
-  NSAssert1(NO, @"CacheController %s did not implement -integrateResults:",
+  NSAssert1(NO, @"CacheController %s did not implement -sync",
             class_getName([self class]));
 }
 

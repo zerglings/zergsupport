@@ -15,7 +15,6 @@
 
 
 @interface ZNModelJsonParser () <ZNObjectJsonParserDelegate>
--(void)parsedJson:(NSDictionary*)jsonData context:(id)context;
 @end
 
 
@@ -23,7 +22,7 @@
 
 #pragma mark Lifecycle
 
-@synthesize context, delegate;
+@synthesize delegate;
 
 -(id)initWithQueries:(NSArray*)queries
       documentCasing:(ZNFormatterCasing)documentCasing {
@@ -50,7 +49,9 @@
         [compiledQueries addObject:null];
       }
       NSString* queryString = [queries objectAtIndex:(i + 1)];
-      [compiledQueries addObject:[ZNObjectQuery newCompile:queryString]];
+      ZNObjectQuery* query = [ZNObjectQuery newCompile:queryString];
+      [compiledQueries addObject:query];
+      [query release];
     }
   }
   return self;
@@ -75,7 +76,7 @@
 
 #pragma mark ZNDictionaryJsonParser delegate
 
--(void)parsedJson:(NSDictionary*)jsonData context:(id)context {
+-(void)parsedJson:(NSObject*)jsonData context:(id)context {
   for (NSUInteger i = 0; i < [compiledQueries count]; i += 2) {
     Class modelClass = [compiledQueries objectAtIndex:i];
     ZNObjectQuery* query = [compiledQueries objectAtIndex:(i + 1)];

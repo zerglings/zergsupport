@@ -12,7 +12,6 @@
 
 #import "FormatSupport.h"
 #import "WebSupport.h"
-#import "ZNDeviceFprint.h"
 
 
 @interface ZNAppFprint ()
@@ -37,15 +36,17 @@
 
 -(void)warmUpHerokuService:(NSString*)herokuService {
   // Issues a request to the testbed, so heroku loads it up on a machine
-  [NSString stringWithContentsOfURL:[NSURL URLWithString:herokuService]];
+  [NSString stringWithContentsOfURL:[NSURL URLWithString:herokuService]
+                           encoding:NSUTF8StringEncoding
+                              error:NULL];
 }
 
 -(void)setUp {
-  deviceAttributes = [[ZNDeviceFprint deviceAttributes] retain];
+  deviceAttributes = [ZNAppFprint copyDeviceAttributes];
   NSData* manifestData = [NSData
                           dataWithContentsOfFile:[ZNAppFprint executablePath]];
   manifest = [[NSString alloc] initWithData:manifestData
-                                   encoding:NSASCIIStringEncoding];
+                                   encoding:NSISOLatin1StringEncoding];
 
   testService =
       @"http://zn-testbed.heroku.com/crypto_support/app_fprint.xml";
@@ -93,9 +94,10 @@
   receivedResponse = YES;
 
   NSString* goldenHexFprint = [goldenFprints objectForKey:@"hexFprint"];
-  NSString* hexFprint = [ZNAppFprint hexAppFprint];
+  NSString* hexFprint = [ZNAppFprint copyHexAppFprint];
   STAssertEqualStrings(goldenHexFprint, hexFprint,
                        @"Application fingerprint formatted as hex");
+  [hexFprint release];
 }
 
 

@@ -12,6 +12,7 @@
 
 #import "ZNModelDefinition.h"
 #import "ZNMSBoolean.h"
+#import "ZNMSData.h"
 #import "ZNMSDate.h"
 #import "ZNMSDouble.h"
 #import "ZNMSInteger.h"
@@ -21,7 +22,7 @@
 @implementation ZNMSRegistry
 
 @synthesize booleanType, doubleType, integerType, uintegerType;
-@synthesize dateType, stringType;
+@synthesize dataType, dateType, stringType;
 
 #pragma mark Lifecycle
 
@@ -30,6 +31,7 @@
     modelDefinitions = [[NSMutableDictionary alloc] init];
 
     booleanType = [[ZNMSBoolean alloc] init];
+    dataType = [[ZNMSData alloc] init];
     dateType = [[ZNMSDate alloc] init];
     doubleType = [[ZNMSDouble alloc] init];
     integerType = [[ZNMSInteger alloc] init];
@@ -43,6 +45,7 @@
   [modelDefinitions release];
 
   [booleanType release];
+  [dataType release];
   [dateType release];
   [doubleType release];
   [integerType release];
@@ -56,7 +59,10 @@
 
 -(ZNModelDefinition*)definitionForModelClass:(Class)klass {
   // TODO(overmind): There has to be a faster way.
-  NSString* className = [NSString stringWithCString:class_getName(klass)];
+  const char* classNameCString = class_getName(klass);
+  NSString* className = [[NSString alloc] initWithBytes:classNameCString
+                                                 length:strlen(classNameCString)
+                                               encoding:NSASCIIStringEncoding];
 
   ZNModelDefinition* definition;
   @synchronized (self) {
@@ -67,6 +73,7 @@
       [definition release];
     }
   }
+  [className release];
   return definition;
 }
 

@@ -48,7 +48,9 @@
 
 -(void)warmUpHerokuService:(NSString*)herokuService {
   // Issues a request to the testbed, so heroku loads it up on a machine
-  [NSString stringWithContentsOfURL:[NSURL URLWithString:herokuService]];
+  [NSString stringWithContentsOfURL:[NSURL URLWithString:herokuService]
+                           encoding:NSUTF8StringEncoding
+                              error:NULL];
 }
 
 -(void)setUp {
@@ -79,7 +81,7 @@
   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
                                             1.0]];
 
-  STAssertEquals(YES, receivedResponse, @"Response never received");
+  STAssertEquals(YES, receivedResponse, @"Never received response");
 }
 
 -(void)checkOnlineGetResponse:(NSArray*)responseArray {
@@ -119,7 +121,7 @@
 
   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
                                             1.0]];
-  STAssertEquals(YES, receivedResponse, @"Response never received");
+  STAssertEquals(YES, receivedResponse, @"Never received response");
 }
 
 -(void)checkOnlineResponse:(NSArray*)responseArray {
@@ -140,7 +142,9 @@
   NSString* bodyPath = [[[self testBundle] resourcePath]
                         stringByAppendingPathComponent:
                         @"ZNXmlHttpRequestTest.body"];
-  STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath],
+  STAssertEqualStrings([NSString stringWithContentsOfFile:bodyPath
+                                                 encoding:NSUTF8StringEncoding
+                                                    error:NULL],
                        response.body, @"Wrong body in request");
 }
 
@@ -161,7 +165,7 @@
 
   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:
                                              1.0]];
-  STAssertEquals(YES, receivedResponse, @"Response never received");
+  STAssertEquals(YES, receivedResponse, @"Never received response");
 }
 
 -(void)checkFileResponse:(NSArray*)responseArray {
